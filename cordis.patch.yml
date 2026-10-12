@@ -1,0 +1,5 @@
+# dsh-session-delete 的 bundle 层：插入这个插件自己那一行。
+# 由 profile 的 dsh.bundle.patch 引用，行 id 保持稳定，方便重复安装/覆盖配置。
+- insert:
+    - id: session-delete
+      name: dsh-session-delete

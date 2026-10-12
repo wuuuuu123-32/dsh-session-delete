@@ -1,0 +1,46 @@
+{
+  "name": "dsh-session-delete",
+  "version": "0.1.0",
+  "description": "在 DSH 会话列表的「⋯」菜单里删除会话（支持批量、二次确认、展示产出清单），删除是移入 Windows 回收站而非永久删除，误删可还原。",
+  "type": "module",
+  "license": "MIT",
+  "author": "wuuuuu123-32",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wuuuuu123-32/dsh-session-delete.git"
+  },
+  "homepage": "https://github.com/wuuuuu123-32/dsh-session-delete#readme",
+  "bugs": {
+    "url": "https://github.com/wuuuuu123-32/dsh-session-delete/issues"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "session",
+    "delete",
+    "recycle-bin"
+  ],
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/",
+    "cordis.patch.yml"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  }
+}
