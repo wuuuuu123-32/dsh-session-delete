@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-delete",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "在 DSH 会话列表的「⋯」菜单里删除会话（支持批量、二次确认、展示产出清单），删除是移入 Windows 回收站而非永久删除，误删可还原。",
   "type": "module",
   "license": "MIT",

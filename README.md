@@ -72,6 +72,10 @@ DSH 启动时 `JSON.parse` 直接抛 `SyntaxError: Unexpected token '﻿'`，表
 
 ### ❗ 什么算「产出」：只认专属子目录，绝不碰工作区根目录的公用文件
 
+扫描的**事件来源有两种**（2026-10-15 补）：模型直接调 `write` / `edit` 时是 `tool/call`；
+而 run_code（PTC 模式）里调 `tools.write` 时只有 `tool/ptc-dispatch`。两种都要扫，
+否则「整场对话都走 run_code」的会话会被算成零产出（与 `dsh-open-artifacts` 同源）。
+
 DSH 自己的 `turn-deliverables` 规则是"这个会话**写过**哪些文件"。写权限上这没问题
 （没写过就不该删），但它会把**公用文件**算进某个会话的产出 —— 因为总有一个会话写过
 `AGENTS.md` / 升级日志这类跨对话公用的资产。实测中确认框里就把 `升级日志.md` 列成了
@@ -151,6 +155,7 @@ test/                     离线测试（不依赖 GUI）
 测试脚本（全部只依赖 `DSH_HOME` 指向的环境，路径自动从文件位置推导）：
 
 ```bash
+node test/ptc.test.mjs            # 单测：PTC 嵌套写入也算产出（7 组断言）
 node test/smoke-host.mjs          # host 模块加载 + apply + 扫描（只读）
 node test/mock-client.mjs         # 客户端装载 + 插槽注册 + 组件渲染
 node test/list-sessions.mjs       # 列出会话与产出概况（只读）
@@ -207,9 +212,13 @@ Node 自带的解压 API 和 `createZstdDecompress` 流都只返回第一帧。
 ### 6. 「有产出」的判据要跟着 DSH 的规则走
 
 复刻 `@deepseek-ai/dsh-client-ui-deliverables` 的 `turn-deliverables`：
-只认**成功的**写文件类调用（`write` / `edit` / `str_replace_editor`）。
+只认**成功的**写文件类调用（`write` / `edit` / `str_replace_editor` / `present`）。
 成功判据看 `tool/result` 里 `message.content[].isError` 和 `data.error`，
 失败的写调用**不算产出**（否则一次失败的 write 会凭空造出一个"产出目录"）。
+
+**PTC 模式要另算一条**（2026-10-15 实测修过）：`run_code` 里嵌套的 `tools.write` 不产生
+`tool/call`，只有 `tool/ptc-dispatch`，而且它**自带 `isError`**（不必去 `tool/result` 里找）。
+所以 `producedPathsFromEvents` 同时扫这两种事件。回归测试：`node test/ptc.test.mjs`。
 
 ### 7. 会话日志的文件名带版本号，别写死
 
